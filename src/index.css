@@ -115,5 +115,10 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Barlow', system-ui, sans-serif;
+  }
+  h1, h2, h3, .font-display {
+    font-family: 'Bebas Neue', Impact, sans-serif;
+    letter-spacing: 0.02em;
   }
 }
