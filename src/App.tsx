@@ -5,6 +5,15 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import Onboarding from "./pages/Onboarding";
+import Auth from "./pages/Auth";
+import AvatarSetup from "./pages/AvatarSetup";
+import Briefing from "./pages/Briefing";
+import Dashboard from "./pages/Dashboard";
+import Mission from "./pages/Mission";
+import FVM from "./pages/FVM";
+import Admin from "./pages/Admin";
+import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
 
@@ -14,11 +23,20 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/setup" element={<AvatarSetup />} />
+            <Route path="/briefing" element={<Briefing />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/missao" element={<Mission />} />
+            <Route path="/fvm" element={<FVM />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
