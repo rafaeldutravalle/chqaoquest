@@ -213,6 +213,47 @@ export default function Admin() {
             ))}
           </div>
         </Card>
+          </TabsContent>
+
+          <TabsContent value="polls" className="grid lg:grid-cols-2 gap-6">
+            <Card className="p-5 space-y-3">
+              <h2 className="font-display text-xl flex items-center gap-2"><Plus size={20} /> Nova enquete</h2>
+              <div><Label>Pergunta</Label>
+                <Textarea rows={2} value={pollForm.question} onChange={(e) => setPollForm({ ...pollForm, question: e.target.value })} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Alternativa A</Label><Input value={pollForm.option_a} onChange={(e) => setPollForm({ ...pollForm, option_a: e.target.value })} /></div>
+                <div><Label>Alternativa B</Label><Input value={pollForm.option_b} onChange={(e) => setPollForm({ ...pollForm, option_b: e.target.value })} /></div>
+                <div><Label>Alternativa C (opcional)</Label><Input value={pollForm.option_c} onChange={(e) => setPollForm({ ...pollForm, option_c: e.target.value })} /></div>
+                <div><Label>Alternativa D (opcional)</Label><Input value={pollForm.option_d} onChange={(e) => setPollForm({ ...pollForm, option_d: e.target.value })} /></div>
+              </div>
+              <div><Label>Data de ativação</Label>
+                <Input type="date" value={pollForm.active_date} onChange={(e) => setPollForm({ ...pollForm, active_date: e.target.value })} />
+              </div>
+              <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                disabled={!pollForm.question || !pollForm.option_a || !pollForm.option_b}
+                onClick={savePoll}>Criar enquete</Button>
+            </Card>
+
+            <Card className="p-5 space-y-3">
+              <h2 className="font-display text-xl">Enquetes ({polls.length})</h2>
+              <div className="space-y-2 max-h-[70vh] overflow-y-auto">
+                {polls.map((p) => (
+                  <div key={p.id} className="border border-border rounded-lg p-3 text-sm flex items-start gap-2 bg-card">
+                    <div className="flex-1">
+                      <div className="text-xs text-muted-foreground uppercase">{p.active_date}</div>
+                      <div className="font-medium line-clamp-2">{p.question}</div>
+                      <div className="text-xs text-muted-foreground mt-1">A: {p.option_a} • B: {p.option_b}{p.option_c ? ` • C: ${p.option_c}` : ""}{p.option_d ? ` • D: ${p.option_d}` : ""}</div>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => removePoll(p.id)} aria-label="Excluir">
+                      <Trash2 size={16} className="text-destructive" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
