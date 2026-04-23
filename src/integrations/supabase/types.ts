@@ -303,6 +303,7 @@ export type Database = {
           votes: number
         }[]
       }
+      regen_energy_tick: { Args: never; Returns: number }
     }
     Enums: {
       app_role: "admin" | "user"
