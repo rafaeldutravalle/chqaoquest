@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Subject = "portugues"|"geografia"|"historia"|"estatuto"|"risg"|"rae"|"rde"|"licitacoes"|"cpm"|"cppm"|"musica";
 type MinRank = "soldado"|"cabo"|"terceiro_sgt"|"segundo_sgt"|"primeiro_sgt"|"subtenente"|"segundo_ten_qao";
@@ -34,6 +35,11 @@ export default function Admin() {
   const nav = useNavigate();
   const [list, setList] = useState<any[]>([]);
   const [filter, setFilter] = useState<Subject | "all">("all");
+  const [polls, setPolls] = useState<any[]>([]);
+  const [pollForm, setPollForm] = useState({
+    question: "", option_a: "", option_b: "", option_c: "", option_d: "",
+    active_date: new Date().toISOString().slice(0, 10),
+  });
   const [form, setForm] = useState({
     subject: "portugues" as Subject, year: 2024, question_number: 1,
     text: "", option_a: "", option_b: "", option_c: "", option_d: "",
@@ -47,6 +53,8 @@ export default function Admin() {
     if (filter !== "all") q = q.eq("subject", filter);
     const { data } = await q;
     setList(data ?? []);
+    const { data: p } = await supabase.from("polls").select("*").order("active_date", { ascending: false }).limit(30);
+    setPolls(p ?? []);
   };
   useEffect(() => { if (isAdmin) load(); /* eslint-disable-next-line */ }, [isAdmin, filter]);
 
@@ -78,6 +86,28 @@ export default function Admin() {
     load();
   };
 
+  const savePoll = async () => {
+    const { error } = await supabase.from("polls").insert({
+      question: pollForm.question,
+      option_a: pollForm.option_a,
+      option_b: pollForm.option_b,
+      option_c: pollForm.option_c || null,
+      option_d: pollForm.option_d || null,
+      active_date: pollForm.active_date,
+      created_by: user!.id,
+    });
+    if (error) { toast.error(error.message); return; }
+    toast.success("Enquete criada!");
+    setPollForm({ ...pollForm, question: "", option_a: "", option_b: "", option_c: "", option_d: "" });
+    load();
+  };
+
+  const removePoll = async (id: string) => {
+    if (!confirm("Excluir enquete?")) return;
+    await supabase.from("polls").delete().eq("id", id);
+    load();
+  };
+
   return (
     <div className="min-h-dvh bg-background pb-12">
       <header className="bg-gradient-hero text-primary-foreground px-4 py-5">
@@ -85,11 +115,18 @@ export default function Admin() {
           <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary-foreground/10" onClick={() => nav("/dashboard")}>
             <ArrowLeft />
           </Button>
-          <h1 className="font-display text-2xl">Painel administrativo — Questões</h1>
+          <h1 className="font-display text-2xl">Painel administrativo</h1>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-6 grid lg:grid-cols-2 gap-6">
+      <main className="max-w-4xl mx-auto px-4 py-6">
+        <Tabs defaultValue="questions">
+          <TabsList className="mb-4">
+            <TabsTrigger value="questions">Questões</TabsTrigger>
+            <TabsTrigger value="polls">Enquetes</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="questions" className="grid lg:grid-cols-2 gap-6">
         <Card className="p-5 space-y-3">
           <h2 className="font-display text-xl flex items-center gap-2"><Plus size={20} /> Nova questão</h2>
 
@@ -176,6 +213,47 @@ export default function Admin() {
             ))}
           </div>
         </Card>
+          </TabsContent>
+
+          <TabsContent value="polls" className="grid lg:grid-cols-2 gap-6">
+            <Card className="p-5 space-y-3">
+              <h2 className="font-display text-xl flex items-center gap-2"><Plus size={20} /> Nova enquete</h2>
+              <div><Label>Pergunta</Label>
+                <Textarea rows={2} value={pollForm.question} onChange={(e) => setPollForm({ ...pollForm, question: e.target.value })} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Alternativa A</Label><Input value={pollForm.option_a} onChange={(e) => setPollForm({ ...pollForm, option_a: e.target.value })} /></div>
+                <div><Label>Alternativa B</Label><Input value={pollForm.option_b} onChange={(e) => setPollForm({ ...pollForm, option_b: e.target.value })} /></div>
+                <div><Label>Alternativa C (opcional)</Label><Input value={pollForm.option_c} onChange={(e) => setPollForm({ ...pollForm, option_c: e.target.value })} /></div>
+                <div><Label>Alternativa D (opcional)</Label><Input value={pollForm.option_d} onChange={(e) => setPollForm({ ...pollForm, option_d: e.target.value })} /></div>
+              </div>
+              <div><Label>Data de ativação</Label>
+                <Input type="date" value={pollForm.active_date} onChange={(e) => setPollForm({ ...pollForm, active_date: e.target.value })} />
+              </div>
+              <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                disabled={!pollForm.question || !pollForm.option_a || !pollForm.option_b}
+                onClick={savePoll}>Criar enquete</Button>
+            </Card>
+
+            <Card className="p-5 space-y-3">
+              <h2 className="font-display text-xl">Enquetes ({polls.length})</h2>
+              <div className="space-y-2 max-h-[70vh] overflow-y-auto">
+                {polls.map((p) => (
+                  <div key={p.id} className="border border-border rounded-lg p-3 text-sm flex items-start gap-2 bg-card">
+                    <div className="flex-1">
+                      <div className="text-xs text-muted-foreground uppercase">{p.active_date}</div>
+                      <div className="font-medium line-clamp-2">{p.question}</div>
+                      <div className="text-xs text-muted-foreground mt-1">A: {p.option_a} • B: {p.option_b}{p.option_c ? ` • C: ${p.option_c}` : ""}{p.option_d ? ` • D: ${p.option_d}` : ""}</div>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => removePoll(p.id)} aria-label="Excluir">
+                      <Trash2 size={16} className="text-destructive" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );

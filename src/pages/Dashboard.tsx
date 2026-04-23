@@ -7,7 +7,7 @@ import { HUD } from "@/components/game/HUD";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Tv, Trophy, ShieldCheck, Settings, LogOut, Play } from "lucide-react";
+import { Tv, Trophy, ShieldCheck, Settings, LogOut, Play, Users } from "lucide-react";
 import { useState } from "react";
 import { AdRewardDialog } from "@/components/game/AdRewardDialog";
 import { supabase } from "@/integrations/supabase/client";
@@ -109,6 +109,16 @@ export default function Dashboard() {
             </Card>
           </Link>
         </div>
+
+        <Link to="/social" className="block">
+          <Card className="p-4 cursor-pointer hover:shadow-card transition-shadow flex items-center gap-3">
+            <Users className="text-primary" />
+            <div className="flex-1">
+              <div className="font-display text-base">Praça da Tropa</div>
+              <div className="text-xs text-muted-foreground">Ranking semanal e enquete diária</div>
+            </div>
+          </Card>
+        </Link>
 
         <Card className="p-4">
           <div className="flex items-center gap-3">

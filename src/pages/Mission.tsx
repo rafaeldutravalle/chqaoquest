@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, X, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { nextRank, RANK_INFO } from "@/data/ranks";
+import { nextRank, RANK_INFO, RANK_ORDER, type Rank } from "@/data/ranks";
 import { CAPTAIN_AVATAR } from "@/data/avatars";
 
 type Q = {
@@ -23,6 +23,16 @@ type Q = {
 
 const SERIES_SIZE = 5;
 const REQUIRED_AVG = 7.0; // pontuação mínima da série para promover
+
+// Matérias por posto-alvo (próximo posto)
+const SUBJECTS_BY_TARGET: Record<string, ("portugues"|"geografia"|"historia"|"estatuto"|"risg"|"rae"|"rde"|"licitacoes"|"cpm"|"cppm"|"musica")[]> = {
+  cabo:           ["portugues", "geografia"],
+  terceiro_sgt:   ["portugues", "geografia", "historia"],
+  segundo_sgt:    ["portugues", "geografia", "historia", "estatuto"],
+  primeiro_sgt:   ["portugues", "geografia", "historia", "estatuto", "risg"],
+  subtenente:     ["portugues", "geografia", "historia", "estatuto", "risg", "rae", "rde"],
+  segundo_ten_qao:["portugues", "geografia", "historia", "estatuto", "risg", "rae", "rde", "licitacoes", "cpm", "cppm", "musica"],
+};
 
 export default function Mission() {
   const { profile, user, refreshProfile, loading } = useAuth();
@@ -39,10 +49,16 @@ export default function Mission() {
   useEffect(() => {
     if (!user) return;
     (async () => {
+      const target = (nextRank((profile?.rank ?? "soldado") as Rank) ?? "cabo") as Rank;
+      const subjects = SUBJECTS_BY_TARGET[target] ?? ["portugues", "geografia"];
+      // Aceita questões cadastradas para qualquer posto até o alvo
+      const targetIdx = RANK_ORDER.indexOf(target);
+      const eligibleRanks = RANK_ORDER.slice(0, targetIdx + 1);
       const { data, error } = await supabase
         .from("questions")
         .select("id, subject, text, option_a, option_b, option_c, option_d, correct_answer, explanation")
-        .in("subject", ["portugues", "geografia"])
+        .in("subject", subjects)
+        .in("min_rank", eligibleRanks as any)
         .eq("active", true)
         .limit(50);
       if (error || !data) { toast.error("Erro carregando questões"); nav("/dashboard"); return; }
@@ -50,7 +66,7 @@ export default function Mission() {
       setQuestions(shuffled as Q[]);
       setLoadingQ(false);
     })();
-  }, [user, nav]);
+  }, [user, nav, profile?.rank]);
 
   if (loading) return null;
   if (!profile) return <Navigate to="/auth" replace />;
@@ -90,15 +106,32 @@ export default function Mission() {
     const newXp = profile.xp + correct * 10;
     const newGems = profile.gems + (score >= REQUIRED_AVG ? 2 : 0);
     const newFvm = +(profile.fvm_score + score / 10).toFixed(2);
+    const target = (nextRank(profile.rank as Rank) ?? profile.rank) as Rank;
 
     await supabase.from("mission_attempts").insert({
       user_id: profile.user_id,
-      rank_target: (nextRank(profile.rank) ?? profile.rank),
+      rank_target: target,
       series_index: 1,
       correct, total, score,
     });
+
+    // Promoção: 3 séries com média >= REQUIRED_AVG no posto-alvo
+    let newRank: Rank = profile.rank as Rank;
+    if (score >= REQUIRED_AVG && nextRank(profile.rank as Rank)) {
+      const { count } = await supabase
+        .from("mission_attempts")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", profile.user_id)
+        .eq("rank_target", target)
+        .gte("score", REQUIRED_AVG);
+      if ((count ?? 0) >= 3) {
+        newRank = target;
+        toast.success(`🎖️ Promovido a ${RANK_INFO[target].label}!`);
+      }
+    }
+
     await supabase.from("profiles").update({
-      energy: newEnergy, xp: newXp, gems: newGems, fvm_score: newFvm,
+      energy: newEnergy, xp: newXp, gems: newGems, fvm_score: newFvm, rank: newRank,
     }).eq("user_id", profile.user_id);
     await refreshProfile();
     setDone(true);

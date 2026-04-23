@@ -71,6 +71,74 @@ export type Database = {
         }
         Relationships: []
       }
+      poll_votes: {
+        Row: {
+          choice: string
+          id: string
+          poll_id: string
+          user_id: string
+          voted_at: string
+        }
+        Insert: {
+          choice: string
+          id?: string
+          poll_id: string
+          user_id: string
+          voted_at?: string
+        }
+        Update: {
+          choice?: string
+          id?: string
+          poll_id?: string
+          user_id?: string
+          voted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "poll_votes_poll_id_fkey"
+            columns: ["poll_id"]
+            isOneToOne: false
+            referencedRelation: "polls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      polls: {
+        Row: {
+          active_date: string
+          created_at: string
+          created_by: string | null
+          id: string
+          option_a: string
+          option_b: string
+          option_c: string | null
+          option_d: string | null
+          question: string
+        }
+        Insert: {
+          active_date?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          option_a: string
+          option_b: string
+          option_c?: string | null
+          option_d?: string | null
+          question: string
+        }
+        Update: {
+          active_date?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          option_a?: string
+          option_b?: string
+          option_c?: string | null
+          option_d?: string | null
+          question?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_id: string | null
@@ -208,7 +276,17 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      weekly_ranking: {
+        Row: {
+          avatar_id: string | null
+          display_name: string | null
+          missions_done: number | null
+          rank: Database["public"]["Enums"]["military_rank"] | null
+          user_id: string | null
+          week_fvm: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
@@ -217,6 +295,13 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      poll_results: {
+        Args: { _poll_id: string }
+        Returns: {
+          choice: string
+          votes: number
+        }[]
       }
     }
     Enums: {

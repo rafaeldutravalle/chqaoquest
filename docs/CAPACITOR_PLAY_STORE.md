@@ -24,22 +24,29 @@ No Android Studio: **Build → Generate Signed Bundle/APK** → escolha **AAB**,
 `capacitor.config.ts` aponta para o preview Lovable. Antes do build de produção, **remova o bloco `server`** do arquivo.
 
 ## 5. Integrar Google AdMob
+
+O app **já usa** `@capacitor-community/admob` no `AdRewardDialog`. Por padrão ele
+roda com **IDs de teste** do Google (anúncios fake, sem risco de banimento).
+Para produção:
+
 ```bash
-npm i @capacitor-community/admob
 npx cap sync android
 ```
-No `AndroidManifest.xml`:
+
+No `android/app/src/main/AndroidManifest.xml` adicione, dentro de `<application>`:
 ```xml
 <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID"
            android:value="ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY"/>
 ```
-Substitua o mock em `src/components/game/AdRewardDialog.tsx` por:
-```ts
-import { AdMob } from '@capacitor-community/admob';
-await AdMob.initialize();
-await AdMob.prepareRewardVideoAd({ adId: 'ca-app-pub-…/…' });
-await AdMob.showRewardVideoAd();
+
+Defina o ID real do *rewarded* via variável de ambiente antes do build:
+```bash
+# .env (não commitar)
+VITE_ADMOB_REWARDED_ID=ca-app-pub-XXXXXXXXXXXXXXXX/ZZZZZZZZZZ
 ```
+`AdRewardDialog.tsx` consome esse `VITE_ADMOB_REWARDED_ID` automaticamente.
+No web (preview Lovable / `npm run dev`) o componente exibe um **mock de 5s**
+para QA — só no APK/AAB ele chama o AdMob real.
 
 ## 6. Login Google nativo
 No Google Cloud crie OAuth Client ID **Android** com o SHA-1 da sua keystore e configure em **Lovable Cloud → Auth Settings → Google**.
