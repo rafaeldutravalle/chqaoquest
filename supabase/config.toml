@@ -1,1 +1,4 @@
 project_id = "sedqvrgoetvgclpoeorg"
+
+[functions.regen-energy]
+verify_jwt = false
