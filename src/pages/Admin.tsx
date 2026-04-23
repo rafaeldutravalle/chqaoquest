@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Subject = "portugues"|"geografia"|"historia"|"estatuto"|"risg"|"rae"|"rde"|"licitacoes"|"cpm"|"cppm"|"musica";
 type MinRank = "soldado"|"cabo"|"terceiro_sgt"|"segundo_sgt"|"primeiro_sgt"|"subtenente"|"segundo_ten_qao";
@@ -34,6 +35,11 @@ export default function Admin() {
   const nav = useNavigate();
   const [list, setList] = useState<any[]>([]);
   const [filter, setFilter] = useState<Subject | "all">("all");
+  const [polls, setPolls] = useState<any[]>([]);
+  const [pollForm, setPollForm] = useState({
+    question: "", option_a: "", option_b: "", option_c: "", option_d: "",
+    active_date: new Date().toISOString().slice(0, 10),
+  });
   const [form, setForm] = useState({
     subject: "portugues" as Subject, year: 2024, question_number: 1,
     text: "", option_a: "", option_b: "", option_c: "", option_d: "",
@@ -47,6 +53,8 @@ export default function Admin() {
     if (filter !== "all") q = q.eq("subject", filter);
     const { data } = await q;
     setList(data ?? []);
+    const { data: p } = await supabase.from("polls").select("*").order("active_date", { ascending: false }).limit(30);
+    setPolls(p ?? []);
   };
   useEffect(() => { if (isAdmin) load(); /* eslint-disable-next-line */ }, [isAdmin, filter]);
 
