@@ -86,6 +86,28 @@ export default function Admin() {
     load();
   };
 
+  const savePoll = async () => {
+    const { error } = await supabase.from("polls").insert({
+      question: pollForm.question,
+      option_a: pollForm.option_a,
+      option_b: pollForm.option_b,
+      option_c: pollForm.option_c || null,
+      option_d: pollForm.option_d || null,
+      active_date: pollForm.active_date,
+      created_by: user!.id,
+    });
+    if (error) { toast.error(error.message); return; }
+    toast.success("Enquete criada!");
+    setPollForm({ ...pollForm, question: "", option_a: "", option_b: "", option_c: "", option_d: "" });
+    load();
+  };
+
+  const removePoll = async (id: string) => {
+    if (!confirm("Excluir enquete?")) return;
+    await supabase.from("polls").delete().eq("id", id);
+    load();
+  };
+
   return (
     <div className="min-h-dvh bg-background pb-12">
       <header className="bg-gradient-hero text-primary-foreground px-4 py-5">
