@@ -115,11 +115,18 @@ export default function Admin() {
           <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary-foreground/10" onClick={() => nav("/dashboard")}>
             <ArrowLeft />
           </Button>
-          <h1 className="font-display text-2xl">Painel administrativo — Questões</h1>
+          <h1 className="font-display text-2xl">Painel administrativo</h1>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-6 grid lg:grid-cols-2 gap-6">
+      <main className="max-w-4xl mx-auto px-4 py-6">
+        <Tabs defaultValue="questions">
+          <TabsList className="mb-4">
+            <TabsTrigger value="questions">Questões</TabsTrigger>
+            <TabsTrigger value="polls">Enquetes</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="questions" className="grid lg:grid-cols-2 gap-6">
         <Card className="p-5 space-y-3">
           <h2 className="font-display text-xl flex items-center gap-2"><Plus size={20} /> Nova questão</h2>
 
