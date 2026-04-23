@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, X, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { nextRank, RANK_INFO, type Rank } from "@/data/ranks";
+import { nextRank, RANK_INFO, RANK_ORDER, type Rank } from "@/data/ranks";
 import { CAPTAIN_AVATAR } from "@/data/avatars";
 
 type Q = {
@@ -51,11 +51,14 @@ export default function Mission() {
     (async () => {
       const target = (nextRank((profile?.rank ?? "soldado") as Rank) ?? "cabo") as Rank;
       const subjects = SUBJECTS_BY_TARGET[target] ?? ["portugues", "geografia"];
+      // Aceita questões cadastradas para qualquer posto até o alvo
+      const targetIdx = RANK_ORDER.indexOf(target);
+      const eligibleRanks = RANK_ORDER.slice(0, targetIdx + 1);
       const { data, error } = await supabase
         .from("questions")
         .select("id, subject, text, option_a, option_b, option_c, option_d, correct_answer, explanation")
         .in("subject", subjects)
-        .lte("min_rank", target as any)
+        .in("min_rank", eligibleRanks as any)
         .eq("active", true)
         .limit(50);
       if (error || !data) { toast.error("Erro carregando questões"); nav("/dashboard"); return; }
