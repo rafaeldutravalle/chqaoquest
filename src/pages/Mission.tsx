@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, X, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { nextRank, RANK_INFO } from "@/data/ranks";
+import { nextRank, RANK_INFO, type Rank } from "@/data/ranks";
 import { CAPTAIN_AVATAR } from "@/data/avatars";
 
 type Q = {
@@ -23,6 +23,16 @@ type Q = {
 
 const SERIES_SIZE = 5;
 const REQUIRED_AVG = 7.0; // pontuação mínima da série para promover
+
+// Matérias por posto-alvo (próximo posto)
+const SUBJECTS_BY_TARGET: Record<string, ("portugues"|"geografia"|"historia"|"estatuto"|"risg"|"rae"|"rde"|"licitacoes"|"cpm"|"cppm"|"musica")[]> = {
+  cabo:           ["portugues", "geografia"],
+  terceiro_sgt:   ["portugues", "geografia", "historia"],
+  segundo_sgt:    ["portugues", "geografia", "historia", "estatuto"],
+  primeiro_sgt:   ["portugues", "geografia", "historia", "estatuto", "risg"],
+  subtenente:     ["portugues", "geografia", "historia", "estatuto", "risg", "rae", "rde"],
+  segundo_ten_qao:["portugues", "geografia", "historia", "estatuto", "risg", "rae", "rde", "licitacoes", "cpm", "cppm", "musica"],
+};
 
 export default function Mission() {
   const { profile, user, refreshProfile, loading } = useAuth();
@@ -39,10 +49,13 @@ export default function Mission() {
   useEffect(() => {
     if (!user) return;
     (async () => {
+      const target = (nextRank((profile?.rank ?? "soldado") as Rank) ?? "cabo") as Rank;
+      const subjects = SUBJECTS_BY_TARGET[target] ?? ["portugues", "geografia"];
       const { data, error } = await supabase
         .from("questions")
         .select("id, subject, text, option_a, option_b, option_c, option_d, correct_answer, explanation")
-        .in("subject", ["portugues", "geografia"])
+        .in("subject", subjects)
+        .lte("min_rank", target as any)
         .eq("active", true)
         .limit(50);
       if (error || !data) { toast.error("Erro carregando questões"); nav("/dashboard"); return; }
@@ -50,7 +63,7 @@ export default function Mission() {
       setQuestions(shuffled as Q[]);
       setLoadingQ(false);
     })();
-  }, [user, nav]);
+  }, [user, nav, profile?.rank]);
 
   if (loading) return null;
   if (!profile) return <Navigate to="/auth" replace />;
