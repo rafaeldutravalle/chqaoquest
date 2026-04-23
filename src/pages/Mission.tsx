@@ -134,6 +134,10 @@ export default function Mission() {
       energy: newEnergy, xp: newXp, gems: newGems, fvm_score: newFvm, rank: newRank,
     }).eq("user_id", profile.user_id);
     await refreshProfile();
+    if (newRank === "segundo_ten_qao" && profile.rank !== "segundo_ten_qao") {
+      nav("/formatura");
+      return;
+    }
     setDone(true);
   };
 

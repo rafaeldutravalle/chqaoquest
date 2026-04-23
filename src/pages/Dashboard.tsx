@@ -7,11 +7,12 @@ import { HUD } from "@/components/game/HUD";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Tv, Trophy, ShieldCheck, Settings, LogOut, Play, Users } from "lucide-react";
+import { Tv, Trophy, Settings, LogOut, Play, Users, Gem } from "lucide-react";
 import { useState } from "react";
 import { AdRewardDialog } from "@/components/game/AdRewardDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { RankTrack } from "@/components/game/RankTrack";
 
 const SERIES_PER_PROMOTION = 3;
 
@@ -38,6 +39,17 @@ export default function Dashboard() {
     await supabase.from("profiles").update({ energy: newEnergy, gems: profile.gems + 1 }).eq("user_id", profile.user_id);
     await refreshProfile();
     toast.success("+3 energia, +1 gema!");
+  };
+
+  const buyEnergyWithGems = async () => {
+    if (profile.gems < 2) { toast.warning("Você precisa de 2 gemas."); return; }
+    if (profile.energy >= profile.energy_max) { toast.info("Energia já está cheia."); return; }
+    const newEnergy = Math.min(profile.energy_max, profile.energy + 3);
+    await supabase.from("profiles").update({
+      energy: newEnergy, gems: profile.gems - 2,
+    }).eq("user_id", profile.user_id);
+    await refreshProfile();
+    toast.success("Trocou 2 gemas por +3 energia!");
   };
 
   return (
@@ -120,17 +132,18 @@ export default function Dashboard() {
           </Card>
         </Link>
 
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <ShieldCheck className="text-success" />
-            <div className="flex-1">
-              <div className="font-display text-base">Trilha do CHQAO</div>
-              <div className="text-xs text-muted-foreground">
-                Soldado → Cabo → 3º Sgt → 2º Sgt → 1º Sgt → S Ten → 2º Ten QAO
-              </div>
-            </div>
+        <Card
+          className="p-4 cursor-pointer hover:shadow-card transition-shadow flex items-center gap-3"
+          onClick={buyEnergyWithGems}
+        >
+          <Gem className="text-gem" />
+          <div className="flex-1">
+            <div className="font-display text-base">Trocar 2 gemas → +3 energia</div>
+            <div className="text-xs text-muted-foreground">Saldo: {profile.gems} gemas</div>
           </div>
         </Card>
+
+        <RankTrack current={profile.rank} />
       </main>
 
       <AdRewardDialog
