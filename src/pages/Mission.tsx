@@ -106,15 +106,32 @@ export default function Mission() {
     const newXp = profile.xp + correct * 10;
     const newGems = profile.gems + (score >= REQUIRED_AVG ? 2 : 0);
     const newFvm = +(profile.fvm_score + score / 10).toFixed(2);
+    const target = (nextRank(profile.rank as Rank) ?? profile.rank) as Rank;
 
     await supabase.from("mission_attempts").insert({
       user_id: profile.user_id,
-      rank_target: (nextRank(profile.rank) ?? profile.rank),
+      rank_target: target,
       series_index: 1,
       correct, total, score,
     });
+
+    // Promoção: 3 séries com média >= REQUIRED_AVG no posto-alvo
+    let newRank: Rank = profile.rank as Rank;
+    if (score >= REQUIRED_AVG && nextRank(profile.rank as Rank)) {
+      const { count } = await supabase
+        .from("mission_attempts")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", profile.user_id)
+        .eq("rank_target", target)
+        .gte("score", REQUIRED_AVG);
+      if ((count ?? 0) >= 3) {
+        newRank = target;
+        toast.success(`🎖️ Promovido a ${RANK_INFO[target].label}!`);
+      }
+    }
+
     await supabase.from("profiles").update({
-      energy: newEnergy, xp: newXp, gems: newGems, fvm_score: newFvm,
+      energy: newEnergy, xp: newXp, gems: newGems, fvm_score: newFvm, rank: newRank,
     }).eq("user_id", profile.user_id);
     await refreshProfile();
     setDone(true);
