@@ -2,18 +2,25 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import { supabase } from "@/integrations/supabase/client";
 import type { Session, User } from "@supabase/supabase-js";
 
+import type { Rank } from "@/data/ranks";
 type Profile = {
   id: string;
   user_id: string;
   display_name: string | null;
   avatar_id: string | null;
   specialty: string | null;
-  rank: "soldado" | "cabo" | "terceiro_sgt" | "segundo_sgt" | "primeiro_sgt" | "subtenente" | "segundo_ten_qao";
-  fvm_score: number;
+  nome_guerra: string | null;
+  rank: Rank;
+  pontos_merito: number;
+  punicoes: number;
   xp: number;
-  gems: number;
-  energy: number;
-  energy_max: number;
+  municao: number;
+  prontidao: number;
+  prontidao_max: number;
+  streak_dias: number;
+  streak_freezes: number;
+  liga_atual: string;
+  plan: "free" | "supersub" | "maxwolf";
   onboarded: boolean;
 };
 
@@ -38,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loadProfile = async (uid: string) => {
     const { data: p } = await supabase.from("profiles").select("*").eq("user_id", uid).maybeSingle();
-    setProfile(p as Profile | null);
+    setProfile(p as unknown as Profile | null);
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", uid);
     setIsAdmin(!!roles?.some((r: any) => r.role === "admin"));
   };
