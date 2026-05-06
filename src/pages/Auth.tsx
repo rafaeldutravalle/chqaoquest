@@ -27,7 +27,9 @@ export default function Auth() {
 
   return (
     <div className="min-h-dvh bg-gradient-hero text-primary-foreground flex flex-col items-center justify-center px-6 gap-8">
-      <img src={appIcon} alt="CHQAO Quest" width={160} height={160} className="w-40 h-40 object-contain drop-shadow-2xl" />
+      <div className="w-40 h-40 rounded-full overflow-hidden ring-4 ring-accent shadow-gold bg-primary/40 flex items-center justify-center">
+        <img src={appIcon} alt="CHQAO Quest" width={160} height={160} className="w-full h-full object-cover" />
+      </div>
       <div className="text-center space-y-2">
         <h1 className="font-display text-4xl">Apresente-se ao Capitão</h1>
         <p className="text-primary-foreground/80 max-w-xs">Faça login para iniciar sua trajetória no CHQAO.</p>
@@ -47,7 +49,7 @@ export default function Auth() {
         {busy ? "Conectando..." : "Entrar com Google"}
       </Button>
       <p className="text-xs text-primary-foreground/60 text-center max-w-xs">
-        Login obrigatório para liberar o jogo e os anúncios premiados.
+        Login obrigatório para liberar o jogo e bizus para o concurso.
       </p>
     </div>
   );

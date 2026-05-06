@@ -45,7 +45,9 @@ export default function Onboarding() {
             transition={{ duration: 0.35 }}
             className="flex flex-col items-center gap-6 max-w-md"
           >
-            <img src={slides[i].img} alt={slides[i].title} width={200} height={200} className="w-44 h-44 object-contain drop-shadow-2xl" />
+            <div className="w-44 h-44 rounded-full overflow-hidden ring-4 ring-accent shadow-gold bg-primary/40 flex items-center justify-center">
+              <img src={slides[i].img} alt={slides[i].title} width={200} height={200} className="w-full h-full object-cover" />
+            </div>
             <h1 className="font-display text-5xl">{slides[i].title}</h1>
             <p className="text-primary-foreground/85 text-lg">{slides[i].body}</p>
           </motion.div>
