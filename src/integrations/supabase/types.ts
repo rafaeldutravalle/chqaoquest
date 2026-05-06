@@ -14,6 +14,167 @@ export type Database = {
   }
   public: {
     Tables: {
+      caramelo_messages: {
+        Row: {
+          active: boolean
+          category: string
+          id: string
+          text: string
+        }
+        Insert: {
+          active?: boolean
+          category: string
+          id?: string
+          text: string
+        }
+        Update: {
+          active?: boolean
+          category?: string
+          id?: string
+          text?: string
+        }
+        Relationships: []
+      }
+      daily_missions: {
+        Row: {
+          active_date: string
+          description: string
+          goal_subject: Database["public"]["Enums"]["subject"] | null
+          goal_type: string
+          goal_value: number
+          id: string
+          reward_municao: number
+          reward_xp: number
+        }
+        Insert: {
+          active_date?: string
+          description: string
+          goal_subject?: Database["public"]["Enums"]["subject"] | null
+          goal_type: string
+          goal_value: number
+          id?: string
+          reward_municao?: number
+          reward_xp?: number
+        }
+        Update: {
+          active_date?: string
+          description?: string
+          goal_subject?: Database["public"]["Enums"]["subject"] | null
+          goal_type?: string
+          goal_value?: number
+          id?: string
+          reward_municao?: number
+          reward_xp?: number
+        }
+        Relationships: []
+      }
+      dilemmas: {
+        Row: {
+          active: boolean
+          best_answer: string
+          context: string
+          explanation: string | null
+          id: string
+          min_rank: Database["public"]["Enums"]["military_rank"]
+          option_a: string
+          option_b: string
+          option_c: string | null
+          option_d: string | null
+          question: string
+          subject: Database["public"]["Enums"]["subject"] | null
+          title: string
+        }
+        Insert: {
+          active?: boolean
+          best_answer: string
+          context: string
+          explanation?: string | null
+          id?: string
+          min_rank?: Database["public"]["Enums"]["military_rank"]
+          option_a: string
+          option_b: string
+          option_c?: string | null
+          option_d?: string | null
+          question: string
+          subject?: Database["public"]["Enums"]["subject"] | null
+          title: string
+        }
+        Update: {
+          active?: boolean
+          best_answer?: string
+          context?: string
+          explanation?: string | null
+          id?: string
+          min_rank?: Database["public"]["Enums"]["military_rank"]
+          option_a?: string
+          option_b?: string
+          option_c?: string | null
+          option_d?: string | null
+          question?: string
+          subject?: Database["public"]["Enums"]["subject"] | null
+          title?: string
+        }
+        Relationships: []
+      }
+      league_members: {
+        Row: {
+          id: string
+          joined_at: string
+          league_id: string
+          position: number | null
+          user_id: string
+          xp_week: number
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          league_id: string
+          position?: number | null
+          user_id: string
+          xp_week?: number
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          league_id?: string
+          position?: number | null
+          user_id?: string
+          xp_week?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "league_members_league_id_fkey"
+            columns: ["league_id"]
+            isOneToOne: false
+            referencedRelation: "leagues_weekly"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leagues_weekly: {
+        Row: {
+          created_at: string
+          group_index: number
+          id: string
+          liga: Database["public"]["Enums"]["liga"]
+          week_start: string
+        }
+        Insert: {
+          created_at?: string
+          group_index?: number
+          id?: string
+          liga: Database["public"]["Enums"]["liga"]
+          week_start: string
+        }
+        Update: {
+          created_at?: string
+          group_index?: number
+          id?: string
+          liga?: Database["public"]["Enums"]["liga"]
+          week_start?: string
+        }
+        Relationships: []
+      }
       medals: {
         Row: {
           awarded_at: string
@@ -43,6 +204,8 @@ export type Database = {
           completed_at: string
           correct: number
           id: string
+          mission_id: string | null
+          prontidao_used: number
           rank_target: Database["public"]["Enums"]["military_rank"]
           score: number
           series_index: number
@@ -53,7 +216,9 @@ export type Database = {
           completed_at?: string
           correct?: number
           id?: string
-          rank_target: Database["public"]["Enums"]["military_rank"]
+          mission_id?: string | null
+          prontidao_used?: number
+          rank_target?: Database["public"]["Enums"]["military_rank"]
           score?: number
           series_index: number
           total?: number
@@ -63,11 +228,142 @@ export type Database = {
           completed_at?: string
           correct?: number
           id?: string
+          mission_id?: string | null
+          prontidao_used?: number
           rank_target?: Database["public"]["Enums"]["military_rank"]
           score?: number
           series_index?: number
           total?: number
           user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mission_attempts_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: false
+            referencedRelation: "missions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mission_progress: {
+        Row: {
+          attempts_count: number
+          best_score: number
+          completed_at: string | null
+          id: string
+          mission_id: string
+          stars: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attempts_count?: number
+          best_score?: number
+          completed_at?: string | null
+          id?: string
+          mission_id: string
+          stars?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attempts_count?: number
+          best_score?: number
+          completed_at?: string | null
+          id?: string
+          mission_id?: string
+          stars?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mission_progress_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: false
+            referencedRelation: "missions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      missions: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          num_questions: number
+          rank_target: Database["public"]["Enums"]["military_rank"]
+          region_code: string
+          subject: Database["public"]["Enums"]["subject"]
+          title: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          num_questions?: number
+          rank_target: Database["public"]["Enums"]["military_rank"]
+          region_code: string
+          subject: Database["public"]["Enums"]["subject"]
+          title: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          num_questions?: number
+          rank_target?: Database["public"]["Enums"]["military_rank"]
+          region_code?: string
+          subject?: Database["public"]["Enums"]["subject"]
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "missions_region_code_fkey"
+            columns: ["region_code"]
+            isOneToOne: false
+            referencedRelation: "regions"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      museum_cards: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          era: string | null
+          id: string
+          image_url: string | null
+          name: string
+          rarity: Database["public"]["Enums"]["rarity"]
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          era?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          rarity?: Database["public"]["Enums"]["rarity"]
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          era?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          rarity?: Database["public"]["Enums"]["rarity"]
         }
         Relationships: []
       }
@@ -141,52 +437,79 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_level: number
           avatar_id: string | null
           created_at: string
           display_name: string | null
-          energy: number
-          energy_max: number
-          energy_updated_at: string
-          fvm_score: number
-          gems: number
           id: string
+          liga_atual: Database["public"]["Enums"]["liga"]
+          municao: number
+          nome_guerra: string | null
           onboarded: boolean
+          plan: Database["public"]["Enums"]["subscription_plan"]
+          pontos_merito: number
+          prontidao: number
+          prontidao_max: number
+          prontidao_updated_at: string
+          punicoes: number
           rank: Database["public"]["Enums"]["military_rank"]
+          region_unlocked: string[]
           specialty: Database["public"]["Enums"]["specialty"] | null
+          streak_dias: number
+          streak_freezes: number
+          streak_updated_at: string | null
           updated_at: string
           user_id: string
           xp: number
         }
         Insert: {
+          account_level?: number
           avatar_id?: string | null
           created_at?: string
           display_name?: string | null
-          energy?: number
-          energy_max?: number
-          energy_updated_at?: string
-          fvm_score?: number
-          gems?: number
           id?: string
+          liga_atual?: Database["public"]["Enums"]["liga"]
+          municao?: number
+          nome_guerra?: string | null
           onboarded?: boolean
+          plan?: Database["public"]["Enums"]["subscription_plan"]
+          pontos_merito?: number
+          prontidao?: number
+          prontidao_max?: number
+          prontidao_updated_at?: string
+          punicoes?: number
           rank?: Database["public"]["Enums"]["military_rank"]
+          region_unlocked?: string[]
           specialty?: Database["public"]["Enums"]["specialty"] | null
+          streak_dias?: number
+          streak_freezes?: number
+          streak_updated_at?: string | null
           updated_at?: string
           user_id: string
           xp?: number
         }
         Update: {
+          account_level?: number
           avatar_id?: string | null
           created_at?: string
           display_name?: string | null
-          energy?: number
-          energy_max?: number
-          energy_updated_at?: string
-          fvm_score?: number
-          gems?: number
           id?: string
+          liga_atual?: Database["public"]["Enums"]["liga"]
+          municao?: number
+          nome_guerra?: string | null
           onboarded?: boolean
+          plan?: Database["public"]["Enums"]["subscription_plan"]
+          pontos_merito?: number
+          prontidao?: number
+          prontidao_max?: number
+          prontidao_updated_at?: string
+          punicoes?: number
           rank?: Database["public"]["Enums"]["military_rank"]
+          region_unlocked?: string[]
           specialty?: Database["public"]["Enums"]["specialty"] | null
+          streak_dias?: number
+          streak_freezes?: number
+          streak_updated_at?: string | null
           updated_at?: string
           user_id?: string
           xp?: number
@@ -208,7 +531,8 @@ export type Database = {
           option_c: string
           option_d: string
           question_number: number | null
-          subject: Database["public"]["Enums"]["question_subject"]
+          region_code: string | null
+          subject: Database["public"]["Enums"]["subject"]
           text: string
           updated_at: string
           year: number | null
@@ -227,7 +551,8 @@ export type Database = {
           option_c: string
           option_d: string
           question_number?: number | null
-          subject: Database["public"]["Enums"]["question_subject"]
+          region_code?: string | null
+          subject?: Database["public"]["Enums"]["subject"]
           text: string
           updated_at?: string
           year?: number | null
@@ -246,12 +571,274 @@ export type Database = {
           option_c?: string
           option_d?: string
           question_number?: number | null
-          subject?: Database["public"]["Enums"]["question_subject"]
+          region_code?: string | null
+          subject?: Database["public"]["Enums"]["subject"]
           text?: string
           updated_at?: string
           year?: number | null
         }
         Relationships: []
+      }
+      regions: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          display_order: number
+          icon: string | null
+          name: string
+          primary_subject: Database["public"]["Enums"]["subject"]
+          short_name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          icon?: string | null
+          name: string
+          primary_subject: Database["public"]["Enums"]["subject"]
+          short_name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          icon?: string | null
+          name?: string
+          primary_subject?: Database["public"]["Enums"]["subject"]
+          short_name?: string
+        }
+        Relationships: []
+      }
+      store_items: {
+        Row: {
+          active: boolean
+          category: string
+          code: string
+          description: string | null
+          id: string
+          name: string
+          price_municao: number
+          rarity: Database["public"]["Enums"]["rarity"]
+        }
+        Insert: {
+          active?: boolean
+          category: string
+          code: string
+          description?: string | null
+          id?: string
+          name: string
+          price_municao?: number
+          rarity?: Database["public"]["Enums"]["rarity"]
+        }
+        Update: {
+          active?: boolean
+          category?: string
+          code?: string
+          description?: string | null
+          id?: string
+          name?: string
+          price_municao?: number
+          rarity?: Database["public"]["Enums"]["rarity"]
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          current_period_end: string | null
+          id: string
+          plan: Database["public"]["Enums"]["subscription_plan"]
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          current_period_end?: string | null
+          id?: string
+          plan?: Database["public"]["Enums"]["subscription_plan"]
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          current_period_end?: string | null
+          id?: string
+          plan?: Database["public"]["Enums"]["subscription_plan"]
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tropa_stories: {
+        Row: {
+          active: boolean
+          body: string
+          correct_answer: string
+          id: string
+          option_a: string
+          option_b: string
+          question: string
+          title: string
+        }
+        Insert: {
+          active?: boolean
+          body: string
+          correct_answer: string
+          id?: string
+          option_a: string
+          option_b: string
+          question: string
+          title: string
+        }
+        Update: {
+          active?: boolean
+          body?: string
+          correct_answer?: string
+          id?: string
+          option_a?: string
+          option_b?: string
+          question?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      user_cunhetes: {
+        Row: {
+          contents: Json | null
+          created_at: string
+          id: string
+          opened: boolean
+          rarity: Database["public"]["Enums"]["rarity"]
+          source: string
+          user_id: string
+        }
+        Insert: {
+          contents?: Json | null
+          created_at?: string
+          id?: string
+          opened?: boolean
+          rarity?: Database["public"]["Enums"]["rarity"]
+          source: string
+          user_id: string
+        }
+        Update: {
+          contents?: Json | null
+          created_at?: string
+          id?: string
+          opened?: boolean
+          rarity?: Database["public"]["Enums"]["rarity"]
+          source?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_daily_progress: {
+        Row: {
+          claimed: boolean
+          daily_mission_id: string
+          id: string
+          progress: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          claimed?: boolean
+          daily_mission_id: string
+          id?: string
+          progress?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          claimed?: boolean
+          daily_mission_id?: string
+          id?: string
+          progress?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_daily_progress_daily_mission_id_fkey"
+            columns: ["daily_mission_id"]
+            isOneToOne: false
+            referencedRelation: "daily_missions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_inventory: {
+        Row: {
+          acquired_at: string
+          equipped: boolean
+          id: string
+          item_id: string
+          qty: number
+          user_id: string
+        }
+        Insert: {
+          acquired_at?: string
+          equipped?: boolean
+          id?: string
+          item_id: string
+          qty?: number
+          user_id: string
+        }
+        Update: {
+          acquired_at?: string
+          equipped?: boolean
+          id?: string
+          item_id?: string
+          qty?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_inventory_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "store_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_museum_cards: {
+        Row: {
+          acquired_at: string
+          card_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          acquired_at?: string
+          card_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          acquired_at?: string
+          card_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_museum_cards_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "museum_cards"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -276,17 +863,7 @@ export type Database = {
       }
     }
     Views: {
-      weekly_ranking: {
-        Row: {
-          avatar_id: string | null
-          display_name: string | null
-          missions_done: number | null
-          rank: Database["public"]["Enums"]["military_rank"] | null
-          user_id: string | null
-          week_fvm: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       has_role: {
@@ -303,18 +880,32 @@ export type Database = {
           votes: number
         }[]
       }
-      regen_energy_tick: { Args: never; Returns: number }
+      regen_prontidao_tick: { Args: never; Returns: number }
     }
     Enums: {
       app_role: "admin" | "user"
+      liga:
+        | "recruta"
+        | "max_wolf_filho"
+        | "prata"
+        | "vilagran_cabrita"
+        | "bitencourt"
+        | "mallet"
+        | "osorio"
+        | "sampaio"
+        | "rondon"
+        | "caxias"
       military_rank:
+        | "recruta"
         | "soldado"
         | "cabo"
         | "terceiro_sgt"
         | "segundo_sgt"
         | "primeiro_sgt"
         | "subtenente"
-        | "segundo_ten_qao"
+        | "segundo_tenente"
+        | "primeiro_tenente"
+        | "capitao_qao"
       question_difficulty: "easy" | "medium" | "hard"
       question_subject:
         | "portugues"
@@ -328,6 +919,7 @@ export type Database = {
         | "cpm"
         | "cppm"
         | "musica"
+      rarity: "comum" | "raro" | "epico" | "lendario"
       specialty:
         | "infantaria"
         | "artilharia"
@@ -340,6 +932,21 @@ export type Database = {
         | "topografia"
         | "aviacao"
         | "musica"
+      subject:
+        | "portugues"
+        | "geografia"
+        | "historia"
+        | "estatuto"
+        | "risg"
+        | "rae"
+        | "rde"
+        | "licitacoes"
+        | "cpm"
+        | "cppm"
+        | "doutrina"
+        | "sindicancia"
+        | "ingles"
+      subscription_plan: "free" | "supersub" | "maxwolf"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -468,14 +1075,29 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      liga: [
+        "recruta",
+        "max_wolf_filho",
+        "prata",
+        "vilagran_cabrita",
+        "bitencourt",
+        "mallet",
+        "osorio",
+        "sampaio",
+        "rondon",
+        "caxias",
+      ],
       military_rank: [
+        "recruta",
         "soldado",
         "cabo",
         "terceiro_sgt",
         "segundo_sgt",
         "primeiro_sgt",
         "subtenente",
-        "segundo_ten_qao",
+        "segundo_tenente",
+        "primeiro_tenente",
+        "capitao_qao",
       ],
       question_difficulty: ["easy", "medium", "hard"],
       question_subject: [
@@ -491,6 +1113,7 @@ export const Constants = {
         "cppm",
         "musica",
       ],
+      rarity: ["comum", "raro", "epico", "lendario"],
       specialty: [
         "infantaria",
         "artilharia",
@@ -504,6 +1127,22 @@ export const Constants = {
         "aviacao",
         "musica",
       ],
+      subject: [
+        "portugues",
+        "geografia",
+        "historia",
+        "estatuto",
+        "risg",
+        "rae",
+        "rde",
+        "licitacoes",
+        "cpm",
+        "cppm",
+        "doutrina",
+        "sindicancia",
+        "ingles",
+      ],
+      subscription_plan: ["free", "supersub", "maxwolf"],
     },
   },
 } as const
