@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Session, User } from "@supabase/supabase-js";
 
 import type { Rank } from "@/data/ranks";
+// Compat layer: novos campos v2 + aliases dos antigos para componentes legados.
 type Profile = {
   id: string;
   user_id: string;
@@ -22,6 +23,11 @@ type Profile = {
   liga_atual: string;
   plan: "free" | "supersub" | "maxwolf";
   onboarded: boolean;
+  // aliases p/ código legado (serão removidos quando migrarmos as telas)
+  energy: number;
+  energy_max: number;
+  gems: number;
+  fvm_score: number;
 };
 
 type Ctx = {
@@ -45,7 +51,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loadProfile = async (uid: string) => {
     const { data: p } = await supabase.from("profiles").select("*").eq("user_id", uid).maybeSingle();
-    setProfile(p as unknown as Profile | null);
+    if (p) {
+      const compat: any = { ...p,
+        energy: (p as any).prontidao,
+        energy_max: (p as any).prontidao_max,
+        gems: (p as any).municao,
+        fvm_score: (p as any).pontos_merito,
+      };
+      setProfile(compat as Profile);
+    } else {
+      setProfile(null);
+    }
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", uid);
     setIsAdmin(!!roles?.some((r: any) => r.role === "admin"));
   };
