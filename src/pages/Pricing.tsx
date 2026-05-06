@@ -60,7 +60,7 @@ export default function Pricing() {
       const stripe = await getStripe();
       if (!stripe || !data?.clientSecret) throw new Error("Stripe não inicializou");
       // Redirect to embedded checkout return URL via hosted flow fallback
-      const checkout = await stripe.initEmbeddedCheckout({ clientSecret: data.clientSecret });
+      const checkout = await (stripe as any).initEmbeddedCheckout({ clientSecret: data.clientSecret });
       // Mount in a temporary container
       const container = document.getElementById("stripe-checkout-mount");
       if (container) {
