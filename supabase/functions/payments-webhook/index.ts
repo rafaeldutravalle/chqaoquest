@@ -14,7 +14,7 @@ function getSupabase() {
 
 function mapPriceToPlan(priceId: string | null): string {
   if (!priceId) return "free";
-  if (priceId.startsWith("max_wolf_filho")) return "max_wolf_filho";
+  if (priceId.startsWith("max_wolf_filho")) return "maxwolf";
   if (priceId.startsWith("supersub")) return "supersub";
   return "free";
 }
