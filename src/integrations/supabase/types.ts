@@ -946,6 +946,7 @@ export type Database = {
         | "doutrina"
         | "sindicancia"
         | "ingles"
+        | "musica"
       subscription_plan: "free" | "supersub" | "maxwolf"
     }
     CompositeTypes: {
@@ -1141,6 +1142,7 @@ export const Constants = {
         "doutrina",
         "sindicancia",
         "ingles",
+        "musica",
       ],
       subscription_plan: ["free", "supersub", "maxwolf"],
     },
