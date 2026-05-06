@@ -7,7 +7,7 @@ import { HUD } from "@/components/game/HUD";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Tv, Trophy, Settings, LogOut, Play, Users, Gem, Map as MapIcon, Swords, Crown } from "lucide-react";
+import { Tv, Trophy, Settings, LogOut, Play, Users, Gem, Map as MapIcon, Swords, Crown, ShoppingBag, Library, Package, Utensils, BookOpen, Scale, ShieldAlert } from "lucide-react";
 import { useState } from "react";
 import { AdRewardDialog } from "@/components/game/AdRewardDialog";
 import { supabase } from "@/integrations/supabase/client";
@@ -162,6 +162,61 @@ export default function Dashboard() {
             </div>
           </Card>
         </Link>
+
+        <div className="grid grid-cols-2 gap-3">
+          <Link to="/rancho">
+            <Card className="p-4 cursor-pointer hover:shadow-card flex flex-col gap-1">
+              <Utensils className="text-success" />
+              <div className="font-display text-sm">Rancho</div>
+              <div className="text-xs text-muted-foreground">Recupere Prontidão</div>
+            </Card>
+          </Link>
+          <Link to="/loja">
+            <Card className="p-4 cursor-pointer hover:shadow-card flex flex-col gap-1">
+              <ShoppingBag className="text-primary" />
+              <div className="font-display text-sm">Loja do Quartel</div>
+              <div className="text-xs text-muted-foreground">Uniformes & itens</div>
+            </Card>
+          </Link>
+          <Link to="/museu">
+            <Card className="p-4 cursor-pointer hover:shadow-card flex flex-col gap-1">
+              <Library className="text-accent" />
+              <div className="font-display text-sm">Museu Militar</div>
+              <div className="text-xs text-muted-foreground">Colecionáveis</div>
+            </Card>
+          </Link>
+          <Link to="/cunhetes">
+            <Card className="p-4 cursor-pointer hover:shadow-card flex flex-col gap-1">
+              <Package className="text-warning" />
+              <div className="font-display text-sm">Cunhetes</div>
+              <div className="text-xs text-muted-foreground">Suas recompensas</div>
+            </Card>
+          </Link>
+          <Link to="/historias">
+            <Card className="p-4 cursor-pointer hover:shadow-card flex flex-col gap-1">
+              <BookOpen className="text-primary" />
+              <div className="font-display text-sm">Histórias da Tropa</div>
+              <div className="text-xs text-muted-foreground">Casos práticos</div>
+            </Card>
+          </Link>
+          <Link to="/dilemas">
+            <Card className="p-4 cursor-pointer hover:shadow-card flex flex-col gap-1 border-accent/30">
+              <Scale className="text-accent" />
+              <div className="font-display text-sm">Dilemas do Cmt</div>
+              <div className="text-xs text-muted-foreground">Decisão sob pressão</div>
+            </Card>
+          </Link>
+        </div>
+
+        {profile.punicoes > 0 && (
+          <Card className="p-3 border-destructive/40 bg-destructive/5 flex items-center gap-3">
+            <ShieldAlert className="text-destructive" />
+            <div className="text-xs">
+              <div className="font-display text-destructive">Punições Disciplinares: {profile.punicoes}</div>
+              <div className="text-muted-foreground">Notas baixas na FVM. Faça séries com média ≥ 7 para limpar o histórico.</div>
+            </div>
+          </Card>
+        )}
 
         <Caramelo category="dashboard" />
 
