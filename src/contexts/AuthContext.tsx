@@ -23,6 +23,7 @@ type Profile = {
   liga_atual: string;
   plan: "free" | "supersub" | "maxwolf";
   onboarded: boolean;
+  region_unlocked: string[];
   // aliases p/ código legado (serão removidos quando migrarmos as telas)
   energy: number;
   energy_max: number;
