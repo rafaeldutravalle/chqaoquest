@@ -16,6 +16,7 @@ import Admin from "./pages/Admin";
 import Social from "./pages/Social";
 import Graduation from "./pages/Graduation";
 import Mapa from "./pages/Mapa";
+import Ligas from "./pages/Ligas";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/social" element={<Social />} />
             <Route path="/formatura" element={<Graduation />} />
             <Route path="/mapa" element={<Mapa />} />
+            <Route path="/ligas" element={<Ligas />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
