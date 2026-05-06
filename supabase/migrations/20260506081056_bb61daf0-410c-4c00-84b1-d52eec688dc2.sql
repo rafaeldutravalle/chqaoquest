@@ -1,0 +1,1 @@
+ALTER TYPE public.subject ADD VALUE IF NOT EXISTS 'musica';

@@ -25,13 +25,15 @@ const SERIES_SIZE = 5;
 const REQUIRED_AVG = 7.0; // pontuação mínima da série para promover
 
 // Matérias por posto-alvo (próximo posto)
-const SUBJECTS_BY_TARGET: Record<string, ("portugues"|"geografia"|"historia"|"estatuto"|"risg"|"rae"|"rde"|"licitacoes"|"cpm"|"cppm"|"musica")[]> = {
+const SUBJECTS_BY_TARGET: Record<string, ("portugues"|"geografia"|"historia"|"estatuto"|"risg"|"rae"|"rde"|"licitacoes"|"cpm"|"cppm"|"musica"|"doutrina"|"sindicancia"|"ingles")[]> = {
   cabo:           ["portugues", "geografia"],
   terceiro_sgt:   ["portugues", "geografia", "historia"],
   segundo_sgt:    ["portugues", "geografia", "historia", "estatuto"],
   primeiro_sgt:   ["portugues", "geografia", "historia", "estatuto", "risg"],
   subtenente:     ["portugues", "geografia", "historia", "estatuto", "risg", "rae", "rde"],
-  segundo_ten_qao:["portugues", "geografia", "historia", "estatuto", "risg", "rae", "rde", "licitacoes", "cpm", "cppm", "musica"],
+  segundo_tenente:["portugues", "geografia", "historia", "estatuto", "risg", "rae", "rde", "licitacoes", "cpm", "cppm", "musica"],
+  primeiro_tenente:["portugues", "geografia", "historia", "estatuto", "risg", "rae", "rde", "licitacoes", "cpm", "cppm", "musica", "doutrina", "sindicancia"],
+  capitao_qao:   ["portugues", "geografia", "historia", "estatuto", "risg", "rae", "rde", "licitacoes", "cpm", "cppm", "musica", "doutrina", "sindicancia", "ingles"],
 };
 
 export default function Mission() {
@@ -131,10 +133,10 @@ export default function Mission() {
     }
 
     await supabase.from("profiles").update({
-      energy: newEnergy, xp: newXp, gems: newGems, fvm_score: newFvm, rank: newRank,
-    }).eq("user_id", profile.user_id);
+      prontidao: newEnergy, xp: newXp, municao: newGems, pontos_merito: newFvm, rank: newRank,
+    } as any).eq("user_id", profile.user_id);
     await refreshProfile();
-    if (newRank === "segundo_ten_qao" && profile.rank !== "segundo_ten_qao") {
+    if (newRank === "capitao_qao" && profile.rank !== "capitao_qao") {
       nav("/formatura");
       return;
     }
