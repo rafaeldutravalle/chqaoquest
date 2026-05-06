@@ -7,7 +7,7 @@ import { HUD } from "@/components/game/HUD";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Tv, Trophy, Settings, LogOut, Play, Users, Gem, Map as MapIcon, Swords } from "lucide-react";
+import { Tv, Trophy, Settings, LogOut, Play, Users, Gem, Map as MapIcon, Swords, Crown } from "lucide-react";
 import { useState } from "react";
 import { AdRewardDialog } from "@/components/game/AdRewardDialog";
 import { supabase } from "@/integrations/supabase/client";
@@ -149,6 +149,16 @@ export default function Dashboard() {
             <div className="flex-1">
               <div className="font-display text-base">Ligas semanais</div>
               <div className="text-xs text-muted-foreground">Dispute o pelotão e suba de divisão</div>
+            </div>
+          </Card>
+        </Link>
+
+        <Link to="/planos" className="block">
+          <Card className="p-4 cursor-pointer hover:shadow-card transition-shadow flex items-center gap-3 border-accent/40 bg-gradient-to-br from-accent/10 to-transparent">
+            <Crown className="text-accent" />
+            <div className="flex-1">
+              <div className="font-display text-base">Assinar plano premium</div>
+              <div className="text-xs text-muted-foreground">SuperSub ou Max-Wolf — mensal</div>
             </div>
           </Card>
         </Link>
