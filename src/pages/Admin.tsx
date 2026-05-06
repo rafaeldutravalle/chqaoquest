@@ -73,7 +73,7 @@ export default function Admin() {
   );
 
   const save = async () => {
-    const { error } = await supabase.from("questions").insert({ ...form, created_by: user.id });
+    const { error } = await supabase.from("questions").insert({ ...form, created_by: user.id } as any);
     if (error) { toast.error(error.message); return; }
     toast.success("Questão cadastrada!");
     setForm({ ...form, text: "", option_a: "", option_b: "", option_c: "", option_d: "", explanation: "" });
