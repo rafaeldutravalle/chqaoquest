@@ -19,6 +19,13 @@ import Mapa from "./pages/Mapa";
 import Ligas from "./pages/Ligas";
 import Pricing from "./pages/Pricing";
 import CheckoutReturn from "./pages/CheckoutReturn";
+import Loja from "./pages/Loja";
+import Museu from "./pages/Museu";
+import Cunhetes from "./pages/Cunhetes";
+import Rancho from "./pages/Rancho";
+import HistoriasTropa from "./pages/HistoriasTropa";
+import Dilemas from "./pages/Dilemas";
+import Promocao from "./pages/Promocao";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -46,6 +53,13 @@ const App = () => (
             <Route path="/ligas" element={<Ligas />} />
             <Route path="/planos" element={<Pricing />} />
             <Route path="/checkout/return" element={<CheckoutReturn />} />
+            <Route path="/loja" element={<Loja />} />
+            <Route path="/museu" element={<Museu />} />
+            <Route path="/cunhetes" element={<Cunhetes />} />
+            <Route path="/rancho" element={<Rancho />} />
+            <Route path="/historias" element={<HistoriasTropa />} />
+            <Route path="/dilemas" element={<Dilemas />} />
+            <Route path="/promocao" element={<Promocao />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

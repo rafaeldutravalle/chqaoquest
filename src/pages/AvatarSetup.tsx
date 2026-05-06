@@ -15,6 +15,7 @@ export default function AvatarSetup() {
   const nav = useNavigate();
   const [step, setStep] = useState(0);
   const [name, setName] = useState(profile?.display_name ?? "");
+  const [nomeGuerra, setNomeGuerra] = useState("");
   const [avatarId, setAvatarId] = useState<string>(AVATARS[0].id);
   const [spec, setSpec] = useState<Specialty>("infantaria");
   const [saving, setSaving] = useState(false);
@@ -27,6 +28,7 @@ export default function AvatarSetup() {
     setSaving(true);
     const { error } = await supabase.from("profiles").update({
       display_name: name || "Recruta",
+      nome_guerra: nomeGuerra || null,
       avatar_id: avatarId,
       specialty: spec,
       onboarded: true,
@@ -44,14 +46,15 @@ export default function AvatarSetup() {
           <img src={CAPTAIN_AVATAR} alt="" width={56} height={56} className="w-14 h-14" />
           <div>
             <h1 className="font-display text-2xl text-primary">Cadastro do recruta</h1>
-            <p className="text-sm text-muted-foreground">Etapa {step + 1} de 3</p>
+            <p className="text-sm text-muted-foreground">Etapa {step + 1} de 4</p>
           </div>
         </header>
 
         {step === 0 && (
           <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
             <h2 className="font-display text-xl">Como devemos te chamar?</h2>
-            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Seu nome de guerra" maxLength={40} />
+            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Seu nome completo" maxLength={40} />
+            <Input value={nomeGuerra} onChange={(e) => setNomeGuerra(e.target.value)} placeholder="Nome de guerra (opcional, exibido nas Ligas)" maxLength={20} />
             <Button className="w-full" disabled={!name.trim()} onClick={() => setStep(1)}>Avançar</Button>
           </motion.section>
         )}
