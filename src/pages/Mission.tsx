@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, X, Sparkles } from "lucide-react";
+import { Check, X, Sparkles, ShieldAlert, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { nextRank, RANK_INFO, RANK_ORDER, type Rank } from "@/data/ranks";
@@ -44,9 +44,13 @@ export default function Mission() {
   const [picked, setPicked] = useState<"A" | "B" | "C" | "D" | null>(null);
   const [revealed, setRevealed] = useState(false);
   const [showExplain, setShowExplain] = useState(false);
+  const [aiExplain, setAiExplain] = useState<string | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
   const [correct, setCorrect] = useState(0);
   const [done, setDone] = useState(false);
   const [loadingQ, setLoadingQ] = useState(true);
+  const [prontidao, setProntidao] = useState(100); // sessão
+  const [baixa, setBaixa] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -93,12 +97,51 @@ export default function Mission() {
   const submit = () => {
     if (!picked) return;
     setRevealed(true);
-    if (picked === q.correct_answer) setCorrect((c) => c + 1);
+    if (picked === q.correct_answer) {
+      setCorrect((c) => c + 1);
+    } else {
+      const newPront = Math.max(0, prontidao - 20);
+      setProntidao(newPront);
+      if (newPront === 0) setBaixa(true);
+    }
+  };
+
+  const fetchAiExplain = async () => {
+    if (profile.plan !== "maxwolf") {
+      toast.info("IA Tática é exclusiva do plano Max-Wolf Filho");
+      return;
+    }
+    setAiLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("explain-error", {
+        body: {
+          questionText: q.text,
+          userAnswer: picked,
+          correctAnswer: q.correct_answer,
+          options: { A: q.option_a, B: q.option_b, C: q.option_c, D: q.option_d },
+          subject: q.subject,
+        },
+      });
+      if (error) throw error;
+      setAiExplain(data.explanation);
+    } catch (e: any) {
+      toast.error(e.message ?? "Falha na IA Tática");
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   const next = async () => {
+    if (baixa) {
+      // Baixa ao Rancho — abandona missão
+      const newEnergy = Math.max(0, profile.energy - 1);
+      await supabase.from("profiles").update({ prontidao: newEnergy } as any).eq("user_id", profile.user_id);
+      await refreshProfile();
+      nav("/rancho");
+      return;
+    }
     if (idx + 1 < questions.length) {
-      setIdx(idx + 1); setPicked(null); setRevealed(false); setShowExplain(false);
+      setIdx(idx + 1); setPicked(null); setRevealed(false); setShowExplain(false); setAiExplain(null);
       return;
     }
     // Finalizar série
@@ -132,12 +175,20 @@ export default function Mission() {
       }
     }
 
+    // Punição Disciplinar: nota < 5 acumula puniçoes
+    const punicaoDelta = score < 5 ? 1 : 0;
     await supabase.from("profiles").update({
       prontidao: newEnergy, xp: newXp, municao: newGems, pontos_merito: newFvm, rank: newRank,
+      punicoes: profile.punicoes + punicaoDelta,
     } as any).eq("user_id", profile.user_id);
+    if (punicaoDelta) toast.warning("⚠️ Punição Disciplinar registrada na FVM");
     await refreshProfile();
     if (newRank === "capitao_qao" && profile.rank !== "capitao_qao") {
       nav("/formatura");
+      return;
+    }
+    if (newRank !== profile.rank) {
+      nav("/promocao", { state: { newRank } });
       return;
     }
     setDone(true);
@@ -163,6 +214,19 @@ export default function Mission() {
     );
   }
 
+  if (baixa) {
+    return (
+      <div className="min-h-dvh bg-background grid place-items-center p-6">
+        <Card className="p-6 max-w-md text-center space-y-4 border-destructive border-2">
+          <ShieldAlert className="mx-auto text-destructive" size={56} />
+          <h2 className="font-display text-2xl text-destructive">Baixa ao Rancho</h2>
+          <p className="text-muted-foreground">Sua Prontidão chegou a 0%. Recupere-se antes de retomar a missão.</p>
+          <Button className="w-full" onClick={next}>Ir ao Rancho</Button>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-dvh bg-background flex flex-col">
       <div className="bg-gradient-hero text-primary-foreground px-4 py-4">
@@ -174,6 +238,10 @@ export default function Mission() {
           <span className="font-display text-lg text-success">{correct} ✓</span>
         </div>
         <Progress value={((idx) / questions.length) * 100} className="h-2 max-w-md mx-auto" />
+        <div className="max-w-md mx-auto mt-2">
+          <div className="flex justify-between text-xs mb-0.5"><span>Prontidão</span><span>{prontidao}%</span></div>
+          <Progress value={prontidao} className={cn("h-1.5", prontidao < 40 && "[&>div]:bg-destructive")} />
+        </div>
       </div>
 
       <main className="flex-1 max-w-md mx-auto w-full px-4 py-6 flex flex-col">
@@ -215,9 +283,20 @@ export default function Mission() {
                   {picked === q.correct_answer ? "Explicar minha resposta" : "Explicar meu erro"}
                 </Button>
                 {showExplain && (
-                  <Card className="p-3 text-sm bg-secondary/50">
-                    {q.explanation || "Explicação não cadastrada para esta questão."}
-                  </Card>
+                  <>
+                    <Card className="p-3 text-sm bg-secondary/50">
+                      {q.explanation || "Explicação padrão não cadastrada."}
+                    </Card>
+                    <Button variant="outline" className="w-full border-accent/40" onClick={fetchAiExplain} disabled={aiLoading}>
+                      <Crown className="mr-2 text-accent" size={16} />
+                      {aiLoading ? "Convocando IA Tática..." : "IA Tática (Max-Wolf)"}
+                    </Button>
+                    {aiExplain && (
+                      <Card className="p-3 text-sm bg-accent/5 border-accent/30 whitespace-pre-wrap">
+                        {aiExplain}
+                      </Card>
+                    )}
+                  </>
                 )}
               </motion.div>
             )}
