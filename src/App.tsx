@@ -15,6 +15,7 @@ import FVM from "./pages/FVM";
 import Admin from "./pages/Admin";
 import Social from "./pages/Social";
 import Graduation from "./pages/Graduation";
+import Mapa from "./pages/Mapa";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="/social" element={<Social />} />
             <Route path="/formatura" element={<Graduation />} />
+            <Route path="/mapa" element={<Mapa />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
