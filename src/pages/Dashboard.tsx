@@ -36,7 +36,7 @@ export default function Dashboard() {
 
   const refillEnergy = async () => {
     const newEnergy = Math.min(profile.energy_max, profile.energy + 3);
-    await supabase.from("profiles").update({ energy: newEnergy, gems: profile.gems + 1 }).eq("user_id", profile.user_id);
+    await supabase.from("profiles").update({ prontidao: newEnergy, municao: profile.gems + 1 } as any).eq("user_id", profile.user_id);
     await refreshProfile();
     toast.success("+3 energia, +1 gema!");
   };
@@ -46,8 +46,8 @@ export default function Dashboard() {
     if (profile.energy >= profile.energy_max) { toast.info("Energia já está cheia."); return; }
     const newEnergy = Math.min(profile.energy_max, profile.energy + 3);
     await supabase.from("profiles").update({
-      energy: newEnergy, gems: profile.gems - 2,
-    }).eq("user_id", profile.user_id);
+      prontidao: newEnergy, municao: profile.gems - 2,
+    } as any).eq("user_id", profile.user_id);
     await refreshProfile();
     toast.success("Trocou 2 gemas por +3 energia!");
   };
