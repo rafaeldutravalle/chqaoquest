@@ -11,7 +11,7 @@ export default function Graduation() {
   const nav = useNavigate();
   if (loading) return null;
   if (!profile) return <Navigate to="/auth" replace />;
-  if (profile.rank !== "segundo_ten_qao") return <Navigate to="/dashboard" replace />;
+  if (profile.rank !== "capitao_qao") return <Navigate to="/dashboard" replace />;
 
   return (
     <div className="min-h-dvh bg-gradient-hero text-primary-foreground px-4 py-8 flex flex-col items-center justify-center">
@@ -40,7 +40,7 @@ export default function Graduation() {
       >
         <Award className="mx-auto text-accent" size={56} />
         <h1 className="font-display text-4xl">Espada de Honra</h1>
-        <p className="font-display text-2xl text-accent">2º Tenente QAO</p>
+        <p className="font-display text-2xl text-accent">Capitão QAO</p>
         <p className="text-primary-foreground/85">
           Parabéns, <strong>{profile.display_name}</strong>! Você concluiu toda a
           jornada do CHQAO. O Capitão Cmt da CCAp lhe entrega a Espada de Honra
@@ -57,7 +57,7 @@ export default function Graduation() {
         <Card className="p-4 bg-card/15 border-primary-foreground/20 backdrop-blur flex items-center gap-3">
           <img src={CAPTAIN_AVATAR} alt="" width={56} height={56} className="w-14 h-14" />
           <p className="text-sm text-primary-foreground/90">
-            "Continue se preparando, Tenente. O Brasil precisa de líderes como você."
+          "Continue se preparando, Capitão. O Brasil precisa de líderes como você."
           </p>
         </Card>
       </motion.div>
