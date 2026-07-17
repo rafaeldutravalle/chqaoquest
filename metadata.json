@@ -1,0 +1,8 @@
+{
+  "name": "CHQAO Quest",
+  "description": "Simulador de Carreira e Preparatório Gamificado para o Concurso de Habilitação ao Quadro de Acesso a Oficiais (CHQAO) com simulação de tomada de decisão e valorização de mérito.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
