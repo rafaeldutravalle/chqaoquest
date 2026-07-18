@@ -1,0 +1,56 @@
+# GitHub Actions Workflow to build and deploy CHQAO Quest static site to GitHub Pages
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build static site
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: "https://mlwjiiqdhnctxyvsupuo.supabase.co"
+          VITE_SUPABASE_PUBLISHABLE_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sd2ppaXFkaG5jdHh5dnN1cHVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NjcwODAsImV4cCI6MjA5NDM0MzA4MH0.2vYjhErK3YpF3nOz43YKPHpoN3BB3DeSahVCOIAKmD8"
+          VITE_SUPABASE_PROJECT_ID: "mlwjiiqdhnctxyvsupuo"
+          VITE_ADMOB_REWARDED_ID: "ca-app-pub-3940256099942544/5224354917"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
