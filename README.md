@@ -1,20 +1,32 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
+  <img width="500" alt="CHQAO Quest Banner" src="assets/chqao-quest-banner.png" />
 </div>
 
-# Run and deploy your AI Studio app
+# CHQAO Quest — A Jornada do Mérito Militar 🎖️
 
-This contains everything you need to run your app locally.
+**CHQAO Quest** est une plateforme d'étude gamifiée de haute performance conçue spécifiquement pour les militaires de l'Armée Brésilienne (Exército Brasileiro). Ce simulateur de carrière prépare les candidats à l'accès à l'officialat en combinant des simulations officielles, des prises de décision tactiques et une gestion du prestige militaire, le tout propulsé par l'intelligence artificielle.
 
-View your app in AI Studio: https://ai.studio/apps/326267ef-5690-4797-8dbf-de07aaaf52ce
+> *"Disciplina, mérito e conhecimento: prepare-se com o rigor regulamentar das nossas Forças Armadas."*
 
-## Run Locally
+---
 
-**Prerequisites:**  Node.js
+## 🚀 Aperçu du Projet
 
+Cette application Android intègre des fonctionnalités avancées d'IA (via Google Gemini) pour offrir un apprentissage personnalisé et interactif adapté aux exigences des concours militaires.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+* **Visualiser l'application dans AI Studio :** [Accéder au projet] (https://rafaeldutravalle.github.io/chqaoquest/)
+
+---
+
+## 🛠️ Installation et Lancement Local
+
+Tout le nécessaire pour exécuter et tester le projet localement se trouve ici.
+
+### Prérequis
+* **Node.js** (version stable recommandée)
+
+### Étapes d'installation
+
+1. **Installer les dépendances du projet :**
+   ```bash
+   npm install
